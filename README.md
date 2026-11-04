@@ -1,4 +1,4 @@
-# Paragraph Editor
+# Translate With AI
 
 A translator-assistance app for reviewing and editing source text and
 translations, with a web interface that AI agents can use to help with

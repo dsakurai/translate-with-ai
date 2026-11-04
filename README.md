@@ -29,8 +29,10 @@ translation kept together. For example:
 
 ```toml
 [[paragraph]]
-original = """hello, my name is Tom."""
-translated = """こんにちは，私の名前はトム．"""
+original = """hello, my name is Tom.
+I live in Tokyo."""
+translated = """こんにちは，私の名前はトムです．
+東京に住んでいます．"""
 
 [[paragraph]]
 original = """Nice to meet you."""

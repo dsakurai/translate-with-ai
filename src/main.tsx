@@ -71,6 +71,11 @@ function ParagraphEditor() {
     entries: [[]],
     index: 0,
   });
+  const [draggedParagraphId, setDraggedParagraphId] = useState<string | null>(
+    null,
+  );
+  const [dropIndex, setDropIndex] = useState<number | null>(null);
+  const dropIndexRef = useRef<number | null>(null);
   const [tomlMalformed, setTomlMalformed] = useState(false);
   const [status, setStatus] = useState<SaveStatus>("loading");
   const [error, setError] = useState("");
@@ -329,6 +334,21 @@ function ParagraphEditor() {
     updateParagraphs(next);
   }
 
+  function setDropPosition(index: number | null) {
+    dropIndexRef.current = index;
+    setDropIndex(index);
+  }
+
+  const displayedParagraphs = (() => {
+    if (draggedParagraphId === null || dropIndex === null) return paragraphs;
+    const from = paragraphs.findIndex((item) => item.id === draggedParagraphId);
+    if (from < 0) return paragraphs;
+    const next = [...paragraphs];
+    const [dragged] = next.splice(from, 1);
+    next.splice(Math.max(0, Math.min(next.length, dropIndex)), 0, dragged);
+    return next;
+  })();
+
   useEffect(() => {
     function handleHistoryShortcut(event: KeyboardEvent) {
       if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
@@ -460,17 +480,63 @@ function ParagraphEditor() {
                   <span>ORIGINAL</span>
                   <span>TRANSLATED</span>
                 </div>
-                {paragraphs.map((paragraph, index) => (
+                {displayedParagraphs.map((paragraph, index) => (
                   <article
-                    className="paragraph-row"
+                    className={`paragraph-row${
+                      draggedParagraphId === paragraph.id
+                        ? " paragraph-row--dragging"
+                        : ""
+                    }${
+                      draggedParagraphId === paragraph.id
+                        ? " paragraph-row--drag-preview"
+                        : ""
+                    }${
+                      dropIndex !== null &&
+                        index === Math.min(dropIndex + 1, paragraphs.length - 1)
+                        ? " paragraph-row--drop-target"
+                        : ""
+                    }`}
                     key={paragraph.id}
-                    onDragOver={(event) => event.preventDefault()}
+                    onDragOver={(event) => {
+                      event.preventDefault();
+                      event.dataTransfer.dropEffect = "move";
+                      if (draggedParagraphId === paragraph.id) return;
+                      const bounds = event.currentTarget
+                        .getBoundingClientRect();
+                      const after = event.clientY >
+                        bounds.top + bounds.height / 2;
+                      const boundary = index + (after ? 1 : 0);
+                      const draggedIndex = displayedParagraphs.findIndex(
+                        (item) => item.id === draggedParagraphId,
+                      );
+                      setDropPosition(
+                        Math.max(
+                          0,
+                          Math.min(
+                            paragraphs.length - 1,
+                            boundary > draggedIndex ? boundary - 1 : boundary,
+                          ),
+                        ),
+                      );
+                    }}
                     onDrop={(event) => {
                       event.preventDefault();
-                      const from = Number(
-                        event.dataTransfer.getData("text/plain"),
+                      const draggedId = event.dataTransfer.getData(
+                        "text/plain",
                       );
-                      moveParagraph(from, index);
+                      const from = paragraphs.findIndex((item) =>
+                        item.id === draggedId
+                      );
+                      const destination = dropIndexRef.current;
+                      if (from >= 0 && destination !== null) {
+                        moveParagraph(from, destination);
+                      }
+                      setDraggedParagraphId(null);
+                      setDropPosition(null);
+                    }}
+                    onDragEnd={() => {
+                      setDraggedParagraphId(null);
+                      setDropPosition(null);
                     }}
                   >
                     <div className="paragraph-controls">
@@ -482,10 +548,29 @@ function ParagraphEditor() {
                         title="Drag to reorder"
                         onDragStart={(event) => {
                           event.dataTransfer.effectAllowed = "move";
+                          setDraggedParagraphId(paragraph.id);
+                          setDropPosition(index);
                           event.dataTransfer.setData(
                             "text/plain",
-                            String(index),
+                            paragraph.id,
                           );
+                          const row = event.currentTarget.closest(
+                            ".paragraph-row",
+                          );
+                          if (row) {
+                            const bounds = row.getBoundingClientRect();
+                            event.dataTransfer.setDragImage(
+                              row,
+                              Math.min(
+                                bounds.width * 0.25,
+                                event.clientX - bounds.left,
+                              ),
+                              Math.min(
+                                bounds.height * 0.5,
+                                event.clientY - bounds.top,
+                              ),
+                            );
+                          }
                         }}
                       >
                         ⠿

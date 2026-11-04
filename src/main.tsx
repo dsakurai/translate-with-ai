@@ -1,11 +1,55 @@
 import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import ReactMarkdown from "react-markdown";
 import { parse } from "@std/toml";
 
 type Paragraph = { id: string; original: string; translated: string };
 type History = { entries: Paragraph[][]; index: number };
 type SaveStatus = "loading" | "saved" | "saving" | "error";
 const HISTORY_LIMIT = 100;
+
+function MarkdownField(
+  { label, value, disabled, onChange }: {
+    label: string;
+    value: string;
+    disabled: boolean;
+    onChange: (value: string) => void;
+  },
+) {
+  const [viewing, setViewing] = useState(true);
+
+  return (
+    <div className="paragraph-field">
+      <div className="paragraph-field-toolbar">
+        <span>{label}</span>
+        <button
+          type="button"
+          className="field-mode-toggle"
+          aria-label={`${viewing ? "Edit" : "View"} ${label}`}
+          aria-pressed={viewing}
+          disabled={disabled}
+          onClick={() => setViewing(!viewing)}
+        >
+          {viewing ? "Edit" : "View"}
+        </button>
+      </div>
+      {viewing
+        ? (
+          <div className="markdown-viewer">
+            <ReactMarkdown>{value.replace(/[\r\n]+$/, "")}</ReactMarkdown>
+          </div>
+        )
+        : (
+          <textarea
+            aria-label={label}
+            disabled={disabled}
+            value={value}
+            onChange={(event) => onChange(event.currentTarget.value)}
+          />
+        )}
+    </div>
+  );
+}
 
 function parseParagraphs(contents: string): Paragraph[] {
   if (!contents.trim()) return [];
@@ -653,33 +697,35 @@ function ParagraphEditor() {
                       </button>
                     </div>
                     <div className="paragraph-fields">
-                      <textarea
-                        aria-label={`Original paragraph ${index + 1}`}
+                      <MarkdownField
+                        key={`${paragraph.id}-original`}
+                        label={`Original paragraph ${index + 1}`}
                         disabled={!loaded}
                         value={paragraph.original}
-                        onChange={(event) =>
+                        onChange={(value) =>
                           updateParagraphs(
                             paragraphs.map((item) =>
                               item.id === paragraph.id
                                 ? {
                                   ...item,
-                                  original: event.currentTarget.value,
+                                  original: value,
                                 }
                                 : item
                             ),
                           )}
                       />
-                      <textarea
-                        aria-label={`Translated paragraph ${index + 1}`}
+                      <MarkdownField
+                        key={`${paragraph.id}-translated`}
+                        label={`Translated paragraph ${index + 1}`}
                         disabled={!loaded}
                         value={paragraph.translated}
-                        onChange={(event) =>
+                        onChange={(value) =>
                           updateParagraphs(
                             paragraphs.map((item) =>
                               item.id === paragraph.id
                                 ? {
                                   ...item,
-                                  translated: event.currentTarget.value,
+                                  translated: value,
                                 }
                                 : item
                             ),

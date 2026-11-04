@@ -292,18 +292,90 @@ textarea:disabled {
   cursor: wait;
 }
 
-.paragraph-fields textarea {
+.paragraph-field {
+  min-width: 0;
+}
+
+.paragraph-field-toolbar {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #a0a198;
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+}
+
+.field-mode-toggle {
+  padding: 4px 8px;
+  border: 1px solid #d9dbd2;
+  border-radius: 4px;
+  background: transparent;
+  color: #59645b;
+  cursor: pointer;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 10px;
+  letter-spacing: normal;
+}
+
+.field-mode-toggle:hover:not(:disabled) {
+  background: #edf0e9;
+}
+
+.field-mode-toggle:disabled {
+  color: #b2b3ab;
+  cursor: wait;
+}
+
+.paragraph-fields textarea,
+.markdown-viewer {
+  width: 100%;
   min-height: 104px;
+  margin: 0;
   padding: 12px;
   border: 1px solid #e7e5df;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.55);
+  color: #383a34;
+  font-family: "Newsreader", Georgia, serif;
   font-size: 16px;
   line-height: 1.55;
 }
 
+.paragraph-fields textarea {
+  display: block;
+}
+
 .paragraph-fields textarea:focus-visible {
   border-color: #b7b9ae;
+}
+
+.markdown-viewer {
+  overflow-wrap: anywhere;
+  background: #f0f0eb;
+}
+
+.markdown-viewer > :first-child {
+  margin-top: 0;
+}
+
+.markdown-viewer > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-viewer pre {
+  overflow-x: auto;
+  padding: 9px;
+  border-radius: 4px;
+  background: rgba(38, 59, 50, 0.06);
+  font-family: ui-monospace, monospace;
+  font-size: 12px;
+}
+
+.markdown-viewer img {
+  max-width: 100%;
 }
 
 .add-paragraph {
@@ -452,6 +524,12 @@ textarea:disabled {
   }
 
   .paragraph-fields textarea {
+    min-height: 120px;
+    padding: 9px;
+    font-size: 14px;
+  }
+
+  .markdown-viewer {
     min-height: 120px;
     padding: 9px;
     font-size: 14px;

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import { parse, stringify } from "@std/toml";
+import { parse } from "@std/toml";
 
 type Paragraph = { id: string; original: string; translated: string };
 type History = { entries: Paragraph[][]; index: number };
@@ -55,12 +55,53 @@ function parseParagraphs(contents: string): Paragraph[] {
 }
 
 function serializeParagraphs(paragraphs: Paragraph[]): string {
-  return stringify({
-    paragraph: paragraphs.map(({ original, translated }) => ({
-      original,
-      translated,
-    })),
-  });
+  function multilineString(value: string): string {
+    let escaped = "";
+    for (const character of value) {
+      const codePoint = character.codePointAt(0)!;
+      switch (character) {
+        case "\\":
+          escaped += "\\\\";
+          break;
+        case '"':
+          escaped += '\\"';
+          break;
+        case "\b":
+          escaped += "\\b";
+          break;
+        case "\t":
+          escaped += "\\t";
+          break;
+        case "\n":
+          escaped += escaped.length === 0 ? "\\n" : "\n";
+          break;
+        case "\f":
+          escaped += "\\f";
+          break;
+        case "\r":
+          escaped += "\\r";
+          break;
+        default:
+          if (
+            codePoint < 0x20 && character !== "\n" ||
+            codePoint === 0x7f
+          ) {
+            escaped += codePoint <= 0xffff
+              ? `\\u${codePoint.toString(16).padStart(4, "0")}`
+              : `\\U${codePoint.toString(16).padStart(8, "0")}`;
+          } else {
+            escaped += character;
+          }
+      }
+    }
+    return `"""${escaped}"""`;
+  }
+
+  return paragraphs.map(({ original, translated }) =>
+    `[[paragraph]]\noriginal = ${multilineString(original)}\ntranslated = ${
+      multilineString(translated)
+    }`
+  ).join("\n\n") + (paragraphs.length ? "\n" : "");
 }
 
 function ParagraphEditor() {
@@ -334,6 +375,16 @@ function ParagraphEditor() {
     updateParagraphs(next);
   }
 
+  function insertParagraph(index: number) {
+    const next = [...paragraphs];
+    next.splice(index, 0, {
+      id: crypto.randomUUID(),
+      original: "",
+      translated: "",
+    });
+    updateParagraphs(next);
+  }
+
   function setDropPosition(index: number | null) {
     dropIndexRef.current = index;
     setDropIndex(index);
@@ -578,6 +629,17 @@ function ParagraphEditor() {
                       <span>#{String(index + 1).padStart(2, "0")}</span>
                       <button
                         type="button"
+                        className="insert-paragraph"
+                        aria-label={`Add paragraph after paragraph ${
+                          index + 1
+                        }`}
+                        disabled={!loaded}
+                        onClick={() => insertParagraph(index + 1)}
+                      >
+                        + Add after
+                      </button>
+                      <button
+                        type="button"
                         className="remove-paragraph"
                         aria-label={`Remove paragraph ${index + 1}`}
                         onClick={() =>
@@ -630,11 +692,7 @@ function ParagraphEditor() {
                   type="button"
                   className="add-paragraph"
                   disabled={!loaded}
-                  onClick={() =>
-                    updateParagraphs([
-                      ...paragraphs,
-                      { id: crypto.randomUUID(), original: "", translated: "" },
-                    ])}
+                  onClick={() => insertParagraph(paragraphs.length)}
                 >
                   + Add paragraph
                 </button>

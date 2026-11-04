@@ -13,12 +13,13 @@ Open the **Paragraph editor** port (8000). The app only edits TOML files using
 the structured paragraph editor.
 
 TOML documents use an array of `paragraph` tables, each with string `original`
-and `translated` values:
+and `translated` values. The editor writes values as TOML multiline basic
+strings (`"""..."""`), preserving line breaks in paragraph text:
 
 ```toml
 [[paragraph]]
-original = "hello, my name is Tom."
-translated = "こんにちは，私の名前はトム．"
+original = """hello, my name is Tom."""
+translated = """こんにちは，私の名前はトム．"""
 ```
 
 Paragraphs can be edited, added, removed, and reordered by dragging their

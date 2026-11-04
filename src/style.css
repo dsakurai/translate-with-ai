@@ -250,6 +250,7 @@ textarea:disabled {
 
 .drag-handle,
 .remove-paragraph,
+.insert-paragraph,
 .add-paragraph {
   border: 0;
   background: transparent;
@@ -274,6 +275,21 @@ textarea:disabled {
 
 .remove-paragraph:hover {
   color: #a1483c;
+}
+
+.insert-paragraph {
+  padding: 3px 6px;
+  border: 1px solid #d9dbd2;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.insert-paragraph:hover:not(:disabled) {
+  background: #edf0e9;
+}
+
+.insert-paragraph:disabled {
+  cursor: wait;
 }
 
 .paragraph-fields textarea {

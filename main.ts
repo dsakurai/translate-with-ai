@@ -23,12 +23,12 @@ try {
 } catch (error) {
   if (!(error instanceof Deno.errors.NotFound)) throw error;
   const initialDocument = `[[paragraph]]
-original = "hello, my name is Tom."
-translated = "こんにちは，私の名前はトム．"
+  original = """hello, my name is Tom."""
+  translated = """こんにちは，私の名前はトム．"""
 
 [[paragraph]]
-original = "This is a second sentence."
-translated = "これは二番目の文です。"
+  original = """This is a second sentence."""
+  translated = """これは二番目の文です。"""
 `;
   await Deno.writeTextFile(documentPath, initialDocument);
 }

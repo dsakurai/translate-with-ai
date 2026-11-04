@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import ReactMarkdown from "react-markdown";
 import { parse } from "@std/toml";
@@ -17,6 +17,14 @@ function MarkdownField(
   },
 ) {
   const [viewing, setViewing] = useState(true);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [value, viewing]);
 
   return (
     <div className="paragraph-field">
@@ -41,8 +49,10 @@ function MarkdownField(
         )
         : (
           <textarea
+            ref={textareaRef}
             aria-label={label}
             disabled={disabled}
+            rows={1}
             value={value}
             onChange={(event) => onChange(event.currentTarget.value)}
           />

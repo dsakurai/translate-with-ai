@@ -3,7 +3,9 @@ import { createRoot } from "react-dom/client";
 import { parse, stringify } from "@std/toml";
 
 type Paragraph = { id: string; original: string; translated: string };
+type History = { entries: Paragraph[][]; index: number };
 type SaveStatus = "loading" | "saved" | "saving" | "error";
+const HISTORY_LIMIT = 100;
 
 function parseParagraphs(contents: string): Paragraph[] {
   if (!contents.trim()) return [];
@@ -65,6 +67,10 @@ function ParagraphEditor() {
   const [filename, setFilename] = useState("");
   const [text, setText] = useState("");
   const [paragraphs, setParagraphs] = useState<Paragraph[]>([]);
+  const [history, setHistory] = useState<History>({
+    entries: [[]],
+    index: 0,
+  });
   const [tomlMalformed, setTomlMalformed] = useState(false);
   const [status, setStatus] = useState<SaveStatus>("loading");
   const [error, setError] = useState("");
@@ -77,12 +83,15 @@ function ParagraphEditor() {
   const saveQueue = useRef<Promise<void>>(Promise.resolve());
   function applyParagraphDocument(contents: string): boolean {
     try {
-      setParagraphs(parseParagraphs(contents));
+      const entries = parseParagraphs(contents);
+      setParagraphs(entries);
+      setHistory({ entries: [entries], index: 0 });
       setTomlMalformed(false);
       setError("");
       return true;
     } catch (cause) {
       setParagraphs([]);
+      setHistory({ entries: [[]], index: 0 });
       setTomlMalformed(true);
       setError(
         cause instanceof Error
@@ -219,11 +228,35 @@ function ParagraphEditor() {
     return () => clearTimeout(timeout);
   }, [externalText, filename, loaded, saveEpoch, text, tomlMalformed]);
 
-  function updateParagraphs(next: Paragraph[]) {
+  function commitParagraphs(next: Paragraph[]) {
     version.current += 1;
     setParagraphs(next);
     setText(serializeParagraphs(next));
     setError("");
+  }
+
+  function updateParagraphs(next: Paragraph[]) {
+    setHistory((current) => {
+      const entries = current.entries.slice(0, current.index + 1);
+      entries.push(next);
+      if (entries.length > HISTORY_LIMIT) entries.shift();
+      return { entries, index: entries.length - 1 };
+    });
+    commitParagraphs(next);
+  }
+
+  function undo() {
+    if (history.index === 0) return;
+    const index = history.index - 1;
+    setHistory({ ...history, index });
+    commitParagraphs(history.entries[index]);
+  }
+
+  function redo() {
+    if (history.index >= history.entries.length - 1) return;
+    const index = history.index + 1;
+    setHistory({ ...history, index });
+    commitParagraphs(history.entries[index]);
   }
 
   function reloadExternal() {
@@ -248,6 +281,7 @@ function ParagraphEditor() {
   function repairToml() {
     version.current += 1;
     setParagraphs([]);
+    setHistory({ entries: [[]], index: 0 });
     setTomlMalformed(false);
     setText(serializeParagraphs([]));
     setError("");
@@ -294,6 +328,33 @@ function ParagraphEditor() {
     next.splice(to, 0, item);
     updateParagraphs(next);
   }
+
+  useEffect(() => {
+    function handleHistoryShortcut(event: KeyboardEvent) {
+      if (!(event.ctrlKey || event.metaKey) || event.altKey) return;
+      const target = event.target;
+      if (
+        target instanceof HTMLElement &&
+        (target.isContentEditable ||
+          target.closest("input, textarea, select, [contenteditable='true']"))
+      ) return;
+
+      const key = event.key.toLowerCase();
+      if (key === "z" && event.shiftKey) {
+        event.preventDefault();
+        redo();
+      } else if (key === "z") {
+        event.preventDefault();
+        undo();
+      } else if (key === "y") {
+        event.preventDefault();
+        redo();
+      }
+    }
+
+    window.addEventListener("keydown", handleHistoryShortcut);
+    return () => window.removeEventListener("keydown", handleHistoryShortcut);
+  });
 
   const statusLabel = {
     loading: "Opening document…",
@@ -369,6 +430,23 @@ function ParagraphEditor() {
           </div>
         )}
 
+        <div className="paragraph-history" aria-label="Paragraph edit history">
+          <button
+            type="button"
+            disabled={!loaded || history.index === 0}
+            onClick={undo}
+          >
+            Undo
+          </button>
+          <button
+            type="button"
+            disabled={!loaded || history.index >= history.entries.length - 1}
+            onClick={redo}
+          >
+            Redo
+          </button>
+        </div>
+
         <div className="paragraph-editor" aria-label="Paragraph entries">
           {tomlMalformed
             ? (
@@ -419,8 +497,8 @@ function ParagraphEditor() {
                         aria-label={`Remove paragraph ${index + 1}`}
                         onClick={() =>
                           updateParagraphs(
-                            paragraphs.filter((item) =>
-                              item.id !== paragraph.id
+                            paragraphs.filter((_, itemIndex) =>
+                              itemIndex !== index
                             ),
                           )}
                       >

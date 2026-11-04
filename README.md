@@ -21,12 +21,14 @@ original = "hello, my name is Tom."
 translated = "こんにちは，私の名前はトム．"
 ```
 
-In TOML mode, paragraphs can be edited, added, removed, and reordered by
-dragging their handle. Changes are saved automatically after a short pause. The
-status indicator shows when changes are saving, saved, or need attention; a
-failed write can be retried. The editor checks for external file changes every
-three seconds and lets you load the external version or keep your editor
-contents.
+Paragraphs can be edited, added, removed, and reordered by dragging their
+handle. **Undo** and **Redo** (Ctrl+Z / Ctrl+Shift+Z or Ctrl+Y) reverse
+paragraph edits, removals, and movements. Keyboard shortcuts are left to the
+browser while a text field is focused. Changes are saved automatically after a
+short pause. The status indicator shows when changes are saving, saved, or need
+attention; a failed write can be retried. The editor checks for external file
+changes every three seconds and lets you load the external version or keep your
+editor contents.
 
 Malformed TOML is not overwritten automatically. The editor shows a validation
 error and offers an explicit **Replace with empty list** action to repair the

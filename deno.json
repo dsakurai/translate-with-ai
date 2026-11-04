@@ -9,5 +9,8 @@
     "build": "deno run --allow-env --allow-read=.,node_modules --allow-write=public --allow-run build.ts",
     "serve:app": "deno run --allow-net --allow-env=APP_PORT,EDITOR_FILE --allow-read=.,node_modules,public,./data --allow-write=./data main.ts",
     "start": "deno task build && deno task serve:app"
+  },
+  "imports": {
+    "@std/toml": "jsr:@std/toml@^1.0.11"
   }
 }

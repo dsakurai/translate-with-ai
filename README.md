@@ -1,6 +1,7 @@
-# Plaintext Notes
+# Paragraph Editor
 
-A minimal React text editor served by Deno. It reads and writes one text file directly through a same-origin Deno endpoint. The editor is unauthenticated for this local demo.
+A minimal React editor served by Deno. It edits one local document through a
+same-origin Deno endpoint. The editor is unauthenticated for this local demo.
 
 ## Run in the devcontainer
 
@@ -8,25 +9,51 @@ A minimal React text editor served by Deno. It reads and writes one text file di
 deno task start
 ```
 
-Open the **Notes editor** port (8000).
+Open the **Paragraph editor** port (8000). The app only edits TOML files using
+the structured paragraph editor.
 
-Edits are saved automatically after a short pause. The status indicator shows when changes are saving, saved, or need attention; a failed write can be retried. The editor checks for external file changes every three seconds and lets you load the external version or keep your editor contents.
+TOML documents use an array of `paragraph` tables, each with string `original`
+and `translated` values:
+
+```toml
+[[paragraph]]
+original = "hello, my name is Tom."
+translated = "こんにちは，私の名前はトム．"
+```
+
+In TOML mode, paragraphs can be edited, added, removed, and reordered by
+dragging their handle. Changes are saved automatically after a short pause. The
+status indicator shows when changes are saving, saved, or need attention; a
+failed write can be retried. The editor checks for external file changes every
+three seconds and lets you load the external version or keep your editor
+contents.
+
+Malformed TOML is not overwritten automatically. The editor shows a validation
+error and offers an explicit **Replace with empty list** action to repair the
+document.
 
 ## Configuration
 
-| Variable | Default | Description |
-| --- | --- | --- |
-| `APP_PORT` | `8000` | Port for the editor and document API |
-| `EDITOR_FILE` | `notes.txt` | Single text filename stored under `data/` |
+| Variable      | Default             | Description                          |
+| ------------- | ------------------- | ------------------------------------ |
+| `APP_PORT`    | `8000`              | Port for the editor and document API |
+| `EDITOR_FILE` | `translations.toml` | TOML filename stored under `data/`   |
 
-`EDITOR_FILE` must be a simple filename without directory components. The document is created as an empty file on first start. The `data/` directory is ignored by Git.
+`EDITOR_FILE` must be a simple filename ending in `.toml`, without directory
+components. The default file is created with two example paragraphs on first
+start. Other new TOML files are created empty. Existing files are not changed on
+startup. The `data/` directory is ignored by Git.
 
 ## Access and transport
 
-This demo has no authentication. `deno task start` builds and runs the app; Deno reads and writes only the configured file under `data/`. The app serves plain HTTP; use it only for local development or on a trusted network, and add authentication and TLS before exposing it elsewhere.
+This demo has no authentication. `deno task start` builds and runs the app; Deno
+reads and writes only the configured TOML file under `data/`. The app serves
+plain HTTP; use it only for local development or on a trusted network, and add
+authentication and TLS before exposing it elsewhere.
 
 ## Validate
 
 ```sh
-deno check main.ts src/main.tsx
+deno check main.ts src/main.tsx build.ts
+deno task build
 ```

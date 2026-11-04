@@ -1,15 +1,15 @@
 const port = Number(Deno.env.get("APP_PORT") ?? "8000");
-const editorFile = Deno.env.get("EDITOR_FILE") ?? "notes.txt";
+const editorFile = Deno.env.get("EDITOR_FILE") ?? "translations.toml";
 
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error("APP_PORT must be a valid TCP port.");
 }
 if (
   !/^[A-Za-z0-9._-]+$/.test(editorFile) || editorFile === "." ||
-  editorFile === ".."
+  editorFile === ".." || !editorFile.toLowerCase().endsWith(".toml")
 ) {
   throw new Error(
-    "EDITOR_FILE must be a simple filename without path components.",
+    "EDITOR_FILE must be a simple .toml filename without path components.",
   );
 }
 
@@ -22,7 +22,15 @@ try {
   await Deno.stat(documentPath);
 } catch (error) {
   if (!(error instanceof Deno.errors.NotFound)) throw error;
-  await Deno.writeTextFile(documentPath, "");
+  const initialDocument = `[[paragraph]]
+original = "hello, my name is Tom."
+translated = "こんにちは，私の名前はトム．"
+
+[[paragraph]]
+original = "This is a second sentence."
+translated = "これは二番目の文です。"
+`;
+  await Deno.writeTextFile(documentPath, initialDocument);
 }
 
 const appServer = Deno.serve(
@@ -43,7 +51,7 @@ const appServer = Deno.serve(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#f5f4f0">
-    <title>Notes</title>
+    <title>Paragraph Editor</title>
     <link rel="stylesheet" href="/style.css">
   </head>
   <body>

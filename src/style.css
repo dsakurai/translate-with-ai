@@ -166,6 +166,110 @@ textarea:disabled {
   cursor: wait;
 }
 
+.editor-shell--toml {
+  width: min(100%, 980px);
+}
+
+.paragraph-editor {
+  border-top: 1px solid #e7e5df;
+}
+
+.paragraph-columns,
+.paragraph-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.paragraph-columns {
+  padding: 14px 0 8px;
+  color: #a0a198;
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+}
+
+.paragraph-row {
+  padding: 13px 0 17px;
+  border-bottom: 1px solid #e7e5df;
+}
+
+.paragraph-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: #a0a198;
+  font-family: ui-monospace, monospace;
+  font-size: 10px;
+}
+
+.drag-handle,
+.remove-paragraph,
+.add-paragraph {
+  border: 0;
+  background: transparent;
+  color: #777a72;
+  cursor: pointer;
+}
+
+.drag-handle {
+  padding: 2px 5px;
+  cursor: grab;
+  font-size: 17px;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.remove-paragraph {
+  margin-left: auto;
+  font-size: 11px;
+}
+
+.remove-paragraph:hover {
+  color: #a1483c;
+}
+
+.paragraph-fields textarea {
+  min-height: 104px;
+  padding: 12px;
+  border: 1px solid #e7e5df;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.55);
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.paragraph-fields textarea:focus-visible {
+  border-color: #b7b9ae;
+}
+
+.add-paragraph {
+  margin-top: 16px;
+  padding: 9px 12px;
+  border: 1px solid #d9dbd2;
+  border-radius: 5px;
+  color: #47574d;
+  font-size: 12px;
+}
+
+.add-paragraph:hover {
+  background: #edf0e9;
+}
+
+.add-paragraph:disabled {
+  cursor: wait;
+}
+
+.toml-invalid {
+  margin: 0;
+  padding: 14px 0;
+  color: #9c4a3e;
+  font-size: 13px;
+}
+
 .editor-footer {
   display: flex;
   justify-content: space-between;
@@ -280,5 +384,16 @@ textarea:disabled {
   textarea {
     min-height: 48vh;
     font-size: 17px;
+  }
+
+  .paragraph-columns,
+  .paragraph-fields {
+    gap: 10px;
+  }
+
+  .paragraph-fields textarea {
+    min-height: 120px;
+    padding: 9px;
+    font-size: 14px;
   }
 }

@@ -159,13 +159,14 @@ textarea:disabled {
   align-items: start;
   gap: 4px;
   min-width: 0;
+  margin-left: 32px;
   margin-right: 42px;
 }
 
 .paragraph-row {
   position: relative;
   margin: 0;
-  padding: 14px 0;
+  padding: 6px 0;
   border-bottom: 1px solid #e7e5df;
   transition: opacity 120ms ease, background-color 120ms ease,
     box-shadow 120ms ease;

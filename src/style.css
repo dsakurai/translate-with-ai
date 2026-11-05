@@ -81,7 +81,7 @@ textarea {
 .editor-shell {
   width: min(100%, 720px);
   flex: 1;
-  margin: clamp(72px, 12vh, 132px) auto 0;
+  margin: 16px auto 0;
 }
 
 .editor-footer,
@@ -548,10 +548,6 @@ textarea:disabled {
   .external-change {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .editor-shell {
-    margin-top: 76px;
   }
 
   textarea {

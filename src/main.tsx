@@ -25,12 +25,62 @@ function MarkdownField(
 ) {
   const [viewing, setViewing] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const lineMeasureRef = useRef<HTMLDivElement>(null);
+  const [lineTops, setLineTops] = useState<number[]>([12]);
 
   useLayoutEffect(() => {
     const textarea = textareaRef.current;
-    if (!textarea) return;
+    if (!textarea || viewing) return;
     textarea.style.height = "auto";
     textarea.style.height = `${textarea.scrollHeight}px`;
+  }, [value, viewing]);
+
+  useLayoutEffect(() => {
+    const textarea = textareaRef.current;
+    const measure = lineMeasureRef.current;
+    if (!textarea || !measure || viewing) return;
+
+    const updateLinePositions = () => {
+      const style = getComputedStyle(textarea);
+      measure.style.left = `${textarea.offsetLeft}px`;
+      measure.style.top = `${textarea.offsetTop}px`;
+      measure.style.width = `${textarea.clientWidth}px`;
+      measure.style.fontFamily = style.fontFamily;
+      measure.style.fontSize = style.fontSize;
+      measure.style.fontWeight = style.fontWeight;
+      measure.style.fontStyle = style.fontStyle;
+      measure.style.letterSpacing = style.letterSpacing;
+      measure.style.lineHeight = style.lineHeight;
+      measure.style.padding = style.padding;
+      measure.style.whiteSpace = style.whiteSpace;
+      measure.style.overflowWrap = style.overflowWrap;
+      measure.style.wordBreak = style.wordBreak;
+      measure.style.tabSize = style.tabSize;
+      const lines = value.split(/\r\n|\r|\n/);
+      measure.replaceChildren(
+        ...lines.map((line) => {
+          const span = document.createElement("span");
+          span.textContent = line;
+          span.style.minHeight = style.lineHeight;
+          return span;
+        }),
+      );
+      const textareaTop = textarea.getBoundingClientRect().top;
+      const nextTops = Array.from(measure.children, (line) =>
+        line.getBoundingClientRect().top - textareaTop
+      );
+      setLineTops((previous) =>
+        previous.length === nextTops.length &&
+          previous.every((top, index) => Math.abs(top - nextTops[index]) < 0.5)
+          ? previous
+          : nextTops
+      );
+    };
+
+    updateLinePositions();
+    const observer = new ResizeObserver(updateLinePositions);
+    observer.observe(textarea);
+    return () => observer.disconnect();
   }, [value, viewing]);
 
   return (
@@ -46,14 +96,26 @@ function MarkdownField(
             </div>
           )
           : (
-            <textarea
-              ref={textareaRef}
-              aria-label={label}
-              disabled={disabled}
-              rows={1}
-              value={value}
-              onChange={(event) => onChange(event.currentTarget.value)}
-            />
+            <div className="paragraph-text-editor">
+              <div className="paragraph-line-numbers" aria-hidden="true">
+                {lineTops.map((top, index) => (
+                  <span key={index} style={{ top }}>{index + 1}</span>
+                ))}
+              </div>
+              <textarea
+                ref={textareaRef}
+                aria-label={label}
+                disabled={disabled}
+                rows={1}
+                value={value}
+                onChange={(event) => onChange(event.currentTarget.value)}
+              />
+              <div
+                className="paragraph-line-measure"
+                aria-hidden="true"
+                ref={lineMeasureRef}
+              />
+            </div>
           )}
         <button
           type="button"

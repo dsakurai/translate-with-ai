@@ -377,14 +377,61 @@ textarea:disabled {
   line-height: 1.55;
 }
 
+.paragraph-text-editor {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  width: 100%;
+  border: 1px solid #e7e5df;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.paragraph-line-numbers {
+  position: relative;
+  width: 40px;
+  border-right: 1px solid #e7e5df;
+  color: #a0a198;
+  font-family: ui-monospace, monospace;
+  font-size: 11px;
+  user-select: none;
+}
+
+.paragraph-line-numbers span {
+  position: absolute;
+  right: 7px;
+  height: 24.8px;
+  line-height: 24.8px;
+}
+
+.paragraph-line-measure {
+  position: absolute;
+  z-index: -1;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: pre-wrap;
+}
+
+.paragraph-line-measure span {
+  display: block;
+}
+
+.paragraph-text-editor textarea {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  border-radius: 0 4px 4px 0;
+  background: transparent;
+}
+
+.paragraph-text-editor:focus-within {
+  border-color: #b7b9ae;
+}
+
 .paragraph-fields textarea {
   display: block;
   overflow: hidden;
   resize: none;
-}
-
-.paragraph-fields textarea:focus-visible {
-  border-color: #b7b9ae;
 }
 
 .markdown-viewer {
@@ -526,6 +573,15 @@ textarea:disabled {
   .paragraph-fields textarea {
     padding: 9px;
     font-size: 14px;
+  }
+
+  .paragraph-line-numbers {
+    font-size: 10px;
+  }
+
+  .paragraph-line-numbers span {
+    height: 21.7px;
+    line-height: 21.7px;
   }
 
   .markdown-viewer {

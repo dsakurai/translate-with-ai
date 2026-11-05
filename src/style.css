@@ -259,9 +259,21 @@ textarea:disabled {
 }
 
 .drag-handle {
+  flex: 0 0 auto;
+  margin-top: 28px;
   padding: 2px 5px;
   cursor: grab;
   font-size: 17px;
+}
+
+.original-paragraph {
+  display: flex;
+  min-width: 0;
+  gap: 4px;
+}
+
+.original-paragraph .paragraph-field {
+  flex: 1;
 }
 
 .drag-handle:active {

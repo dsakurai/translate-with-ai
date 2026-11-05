@@ -647,42 +647,6 @@ function ParagraphEditor() {
                     <div className="paragraph-controls">
                       <button
                         type="button"
-                        className="drag-handle"
-                        draggable
-                        aria-label={`Drag paragraph ${index + 1} to reorder`}
-                        title="Drag to reorder"
-                        onDragStart={(event) => {
-                          event.dataTransfer.effectAllowed = "move";
-                          setDraggedParagraphId(paragraph.id);
-                          setDropPosition(index);
-                          event.dataTransfer.setData(
-                            "text/plain",
-                            paragraph.id,
-                          );
-                          const row = event.currentTarget.closest(
-                            ".paragraph-row",
-                          );
-                          if (row) {
-                            const bounds = row.getBoundingClientRect();
-                            event.dataTransfer.setDragImage(
-                              row,
-                              Math.min(
-                                bounds.width * 0.25,
-                                event.clientX - bounds.left,
-                              ),
-                              Math.min(
-                                bounds.height * 0.5,
-                                event.clientY - bounds.top,
-                              ),
-                            );
-                          }
-                        }}
-                      >
-                        ⠿
-                      </button>
-                      <span>#{String(index + 1).padStart(2, "0")}</span>
-                      <button
-                        type="button"
                         className="insert-paragraph"
                         aria-label={`Add paragraph after paragraph ${
                           index + 1
@@ -707,23 +671,60 @@ function ParagraphEditor() {
                       </button>
                     </div>
                     <div className="paragraph-fields">
-                      <MarkdownField
-                        key={`${paragraph.id}-original`}
-                        label={`Original paragraph ${index + 1}`}
-                        disabled={!loaded}
-                        value={paragraph.original}
-                        onChange={(value) =>
-                          updateParagraphs(
-                            paragraphs.map((item) =>
-                              item.id === paragraph.id
-                                ? {
-                                  ...item,
-                                  original: value,
-                                }
-                                : item
-                            ),
-                          )}
-                      />
+                      <div className="original-paragraph">
+                        <button
+                          type="button"
+                          className="drag-handle"
+                          draggable
+                          aria-label={`Drag paragraph ${index + 1} to reorder`}
+                          title="Drag to reorder"
+                          onDragStart={(event) => {
+                            event.dataTransfer.effectAllowed = "move";
+                            setDraggedParagraphId(paragraph.id);
+                            setDropPosition(index);
+                            event.dataTransfer.setData(
+                              "text/plain",
+                              paragraph.id,
+                            );
+                            const row = event.currentTarget.closest(
+                              ".paragraph-row",
+                            );
+                            if (row) {
+                              const bounds = row.getBoundingClientRect();
+                              event.dataTransfer.setDragImage(
+                                row,
+                                Math.min(
+                                  bounds.width * 0.25,
+                                  event.clientX - bounds.left,
+                                ),
+                                Math.min(
+                                  bounds.height * 0.5,
+                                  event.clientY - bounds.top,
+                                ),
+                              );
+                            }
+                          }}
+                        >
+                          ⠿
+                        </button>
+                        <MarkdownField
+                          key={`${paragraph.id}-original`}
+                          label={`Original paragraph ${index + 1}`}
+                          disabled={!loaded}
+                          value={paragraph.original}
+                          onChange={(value) =>
+                            updateParagraphs(
+                              paragraphs.map((item) =>
+                                item.id === paragraph.id
+                                  ? {
+                                    ...item,
+                                    original: value,
+                                  }
+                                  : item
+                              ),
+                            )}
+                        />
+                      </div>
                       <MarkdownField
                         key={`${paragraph.id}-translated`}
                         label={`Translated paragraph ${index + 1}`}

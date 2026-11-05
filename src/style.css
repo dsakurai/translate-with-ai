@@ -306,12 +306,6 @@ textarea:disabled {
   line-height: 1.2;
 }
 
-.paragraph-field-toolbar--right {
-  right: 38px;
-  left: auto;
-  text-align: right;
-}
-
 .paragraph-field-toolbar span {
   padding: 0 4px;
   background: #f5f4f0;

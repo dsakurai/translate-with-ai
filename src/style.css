@@ -334,18 +334,31 @@ textarea:disabled {
 }
 
 .paragraph-field {
+  position: relative;
   min-width: 0;
 }
 
 .paragraph-field-toolbar {
-  min-height: 28px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  position: absolute;
+  top: -6px;
+  left: 8px;
+  z-index: 1;
   color: #a0a198;
   font-family: ui-monospace, monospace;
   font-size: 9px;
   letter-spacing: 0.08em;
+  line-height: 1.2;
+}
+
+.paragraph-field-toolbar--right {
+  right: 38px;
+  left: auto;
+  text-align: right;
+}
+
+.paragraph-field-toolbar span {
+  padding: 0 4px;
+  background: #f5f4f0;
 }
 
 .paragraph-field-content {

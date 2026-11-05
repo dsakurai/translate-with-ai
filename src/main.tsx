@@ -16,11 +16,12 @@ type SaveStatus = "loading" | "saved" | "saving" | "error";
 const HISTORY_LIMIT = 100;
 
 function MarkdownField(
-  { label, value, disabled, onChange }: {
+  { label, value, disabled, onChange, labelAlignRight = false }: {
     label: string;
     value: string;
     disabled: boolean;
     onChange: (value: string) => void;
+    labelAlignRight?: boolean;
   },
 ) {
   const [viewing, setViewing] = useState(true);
@@ -35,7 +36,11 @@ function MarkdownField(
 
   return (
     <div className="paragraph-field">
-      <div className="paragraph-field-toolbar">
+      <div
+        className={`paragraph-field-toolbar${
+          labelAlignRight ? " paragraph-field-toolbar--right" : ""
+        }`}
+      >
         <span>{label}</span>
       </div>
       <div className="paragraph-field-content">
@@ -797,6 +802,7 @@ function ParagraphEditor() {
                           label={`Translated paragraph ${index + 1}`}
                           disabled={!loaded}
                           value={paragraph.translated}
+                          labelAlignRight
                           onChange={(value) =>
                             updateParagraphs(
                               paragraphs.map((item) =>

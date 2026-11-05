@@ -610,10 +610,22 @@ function ParagraphEditor() {
   return (
     <main className="workspace">
       <header className="topbar">
-        <a className="wordmark" href="/" aria-label="Editor home">
-          <span className="wordmark-icon" aria-hidden="true">n.</span>
-          <span>paragraphs</span>
-        </a>
+        <div className="paragraph-history" aria-label="Paragraph edit history">
+          <button
+            type="button"
+            disabled={!loaded || history.index === 0}
+            onClick={undo}
+          >
+            Undo
+          </button>
+          <button
+            type="button"
+            disabled={!loaded || history.index >= history.entries.length - 1}
+            onClick={redo}
+          >
+            Redo
+          </button>
+        </div>
         <div
           className={`save-status save-status--${status}`}
           aria-live="polite"
@@ -627,14 +639,6 @@ function ParagraphEditor() {
         className="editor-shell editor-shell--toml"
         aria-label="Paragraph editor"
       >
-        <div className="document-heading">
-          <div className="eyebrow">
-            YOUR SPACE <span>/</span> DOCUMENT
-          </div>
-          <h1>{filename || "Opening document"}</h1>
-          <p>Edit and arrange your original and translated paragraphs.</p>
-        </div>
-
         {error && (
           <div className="error-message" role="alert">
             <span>{error}</span>
@@ -673,23 +677,6 @@ function ParagraphEditor() {
             </div>
           </div>
         )}
-
-        <div className="paragraph-history" aria-label="Paragraph edit history">
-          <button
-            type="button"
-            disabled={!loaded || history.index === 0}
-            onClick={undo}
-          >
-            Undo
-          </button>
-          <button
-            type="button"
-            disabled={!loaded || history.index >= history.entries.length - 1}
-            onClick={redo}
-          >
-            Redo
-          </button>
-        </div>
 
         <div className="paragraph-editor" aria-label="Paragraph entries">
           {tomlMalformed

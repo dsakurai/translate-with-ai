@@ -50,30 +50,6 @@ textarea {
   border-bottom: 1px solid #e7e5df;
 }
 
-.wordmark {
-  display: inline-flex;
-  gap: 10px;
-  align-items: center;
-  color: #33352f;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  text-decoration: none;
-}
-
-.wordmark-icon {
-  width: 29px;
-  height: 29px;
-  display: grid;
-  place-items: center;
-  border-radius: 9px;
-  background: #263b32;
-  color: #f6f5f0;
-  font-family: Georgia, serif;
-  font-size: 17px;
-  font-weight: 500;
-}
-
 .save-status {
   display: inline-flex;
   gap: 8px;
@@ -108,11 +84,6 @@ textarea {
   margin: clamp(72px, 12vh, 132px) auto 0;
 }
 
-.document-heading {
-  margin-bottom: 43px;
-}
-
-.eyebrow,
 .editor-footer,
 .footnote {
   font-family: ui-monospace, monospace;
@@ -120,28 +91,7 @@ textarea {
   letter-spacing: 0.12em;
 }
 
-.eyebrow {
-  color: #92948b;
-}
 
-.eyebrow span {
-  padding: 0 7px;
-  color: #c0c1ba;
-}
-
-h1 {
-  margin: 16px 0 7px;
-  font-family: Georgia, serif;
-  font-size: clamp(37px, 5vw, 48px);
-  font-weight: 400;
-  letter-spacing: -0.035em;
-}
-
-.document-heading p {
-  margin: 0;
-  color: #898b82;
-  font-size: 13px;
-}
 
 textarea {
   width: 100%;
@@ -183,9 +133,8 @@ textarea:disabled {
 
 .paragraph-history {
   display: flex;
-  justify-content: flex-end;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .paragraph-history button {
@@ -603,10 +552,6 @@ textarea:disabled {
 
   .editor-shell {
     margin-top: 76px;
-  }
-
-  .document-heading {
-    margin-bottom: 32px;
   }
 
   textarea {

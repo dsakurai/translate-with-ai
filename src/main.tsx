@@ -687,17 +687,15 @@ function ParagraphEditor() {
             )
             : (
               <>
-                {displayedParagraphs.length > 0 && (
-                  <button
-                    type="button"
-                    className="insert-paragraph insert-paragraph--first"
-                    aria-label="Add paragraph at the beginning"
-                    disabled={!loaded}
-                    onClick={() => insertParagraph(0)}
-                  >
-                    + Add here
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="insert-paragraph insert-paragraph--first"
+                  aria-label="Add paragraph at the beginning"
+                  disabled={!loaded}
+                  onClick={() => insertParagraph(0)}
+                >
+                  + Add here
+                </button>
                 {displayedParagraphs.map((paragraph, index) => (
                   <article
                     className={`paragraph-row${
@@ -840,24 +838,11 @@ function ParagraphEditor() {
                     </button>
                   </article>
                 ))}
-                <button
-                  type="button"
-                  className="add-paragraph"
-                  disabled={!loaded}
-                  onClick={() => insertParagraph(paragraphs.length)}
-                >
-                  + Add paragraph
-                </button>
               </>
             )}
-          <footer className="editor-footer">
-            <span>TOML PARAGRAPHS</span>
-            <span>{paragraphs.length} ENTRIES</span>
-          </footer>
         </div>
       </section>
 
-      <p className="footnote">Your words stay in your WebDAV space.</p>
     </main>
   );
 }

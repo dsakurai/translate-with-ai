@@ -30,33 +30,37 @@ function MarkdownField(
     <div className="paragraph-field">
       <div className="paragraph-field-toolbar">
         <span>{label}</span>
+      </div>
+      <div className="paragraph-field-content">
+        {viewing
+          ? (
+            <div className="markdown-viewer">
+              <ReactMarkdown>{value.replace(/[\r\n]+$/, "")}</ReactMarkdown>
+            </div>
+          )
+          : (
+            <textarea
+              ref={textareaRef}
+              aria-label={label}
+              disabled={disabled}
+              rows={1}
+              value={value}
+              onChange={(event) => onChange(event.currentTarget.value)}
+            />
+          )}
         <button
           type="button"
           className="field-mode-toggle"
-          aria-label={`${viewing ? "Edit" : "View"} ${label}`}
-          aria-pressed={viewing}
+          aria-label={`Toggle edit mode for ${label}`}
+          aria-pressed={!viewing}
           disabled={disabled}
           onClick={() => setViewing(!viewing)}
         >
-          {viewing ? "Edit" : "View"}
+          <span aria-hidden="true">
+            ✎
+          </span>
         </button>
       </div>
-      {viewing
-        ? (
-          <div className="markdown-viewer">
-            <ReactMarkdown>{value.replace(/[\r\n]+$/, "")}</ReactMarkdown>
-          </div>
-        )
-        : (
-          <textarea
-            ref={textareaRef}
-            aria-label={label}
-            disabled={disabled}
-            rows={1}
-            value={value}
-            onChange={(event) => onChange(event.currentTarget.value)}
-          />
-        )}
     </div>
   );
 }

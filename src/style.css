@@ -321,7 +321,6 @@ textarea:disabled {
   min-height: 28px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
   color: #a0a198;
   font-family: ui-monospace, monospace;
@@ -329,20 +328,50 @@ textarea:disabled {
   letter-spacing: 0.08em;
 }
 
+.paragraph-field-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 8px;
+}
+
+.paragraph-field-content > textarea,
+.paragraph-field-content > .markdown-viewer {
+  width: auto;
+}
+
 .field-mode-toggle {
-  padding: 4px 8px;
+  width: 30px;
+  height: 30px;
+  display: inline-grid;
+  place-items: center;
+  margin-top: 0;
+  padding: 4px;
   border: 1px solid #d9dbd2;
-  border-radius: 4px;
+  border-radius: 5px;
   background: transparent;
   color: #59645b;
   cursor: pointer;
   font-family: ui-sans-serif, system-ui, sans-serif;
-  font-size: 10px;
+  font-size: 18px;
   letter-spacing: normal;
+  line-height: 1;
+}
+
+.field-mode-toggle[aria-pressed="true"] {
+  border-color: #829782;
+  background: #e4ebe2;
+  color: #263b32;
+  box-shadow: inset 0 0 0 1px rgba(38, 59, 50, 0.08);
 }
 
 .field-mode-toggle:hover:not(:disabled) {
-  background: #edf0e9;
+  background-color: #edf0e9;
+}
+
+.field-mode-toggle:focus-visible {
+  outline: 2px solid #829782;
+  outline-offset: 2px;
 }
 
 .field-mode-toggle:disabled {

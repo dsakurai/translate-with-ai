@@ -195,8 +195,9 @@ textarea:disabled {
 }
 
 .drag-handle {
+  align-self: center;
   flex: 0 0 auto;
-  margin-top: 38px;
+  margin-top: 0;
   padding: 2px 5px;
   cursor: grab;
   font-size: 17px;

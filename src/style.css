@@ -290,14 +290,25 @@ textarea:disabled {
 }
 
 .insert-paragraph {
-  padding: 3px 6px;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  z-index: 2;
+  padding: 3px 8px;
   border: 1px solid #d9dbd2;
-  border-radius: 4px;
+  border-radius: 999px;
+  background: #f5f4f0;
   font-size: 10px;
+  transform: translate(-50%, 50%);
 }
 
 .insert-paragraph:hover:not(:disabled) {
   background: #edf0e9;
+}
+
+.insert-paragraph:focus-visible {
+  outline: 2px solid #829782;
+  outline-offset: 2px;
 }
 
 .insert-paragraph:disabled {

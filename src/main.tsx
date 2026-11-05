@@ -647,17 +647,6 @@ function ParagraphEditor() {
                     <div className="paragraph-controls">
                       <button
                         type="button"
-                        className="insert-paragraph"
-                        aria-label={`Add paragraph after paragraph ${
-                          index + 1
-                        }`}
-                        disabled={!loaded}
-                        onClick={() => insertParagraph(index + 1)}
-                      >
-                        + Add after
-                      </button>
-                      <button
-                        type="button"
                         className="remove-paragraph"
                         aria-label={`Remove paragraph ${index + 1}`}
                         onClick={() =>
@@ -743,6 +732,15 @@ function ParagraphEditor() {
                           )}
                       />
                     </div>
+                    <button
+                      type="button"
+                      className="insert-paragraph"
+                      aria-label={`Add paragraph after paragraph ${index + 1}`}
+                      disabled={!loaded}
+                      onClick={() => insertParagraph(index + 1)}
+                    >
+                      + Add here
+                    </button>
                   </article>
                 ))}
                 <button

@@ -4,6 +4,13 @@ import ReactMarkdown from "react-markdown";
 import { parse } from "@std/toml";
 
 type Paragraph = { id: string; original: string; translated: string };
+type ParagraphPointerDrag = {
+  id: string;
+  pointerId: number;
+  startX: number;
+  startY: number;
+  active: boolean;
+};
 type History = { entries: Paragraph[][]; index: number };
 type SaveStatus = "loading" | "saved" | "saving" | "error";
 const HISTORY_LIMIT = 100;
@@ -175,6 +182,7 @@ function ParagraphEditor() {
   );
   const [dropIndex, setDropIndex] = useState<number | null>(null);
   const dropIndexRef = useRef<number | null>(null);
+  const pointerDrag = useRef<ParagraphPointerDrag | null>(null);
   const previousRowPositions = useRef<Map<string, DOMRect> | null>(null);
   const [tomlMalformed, setTomlMalformed] = useState(false);
   const [status, setStatus] = useState<SaveStatus>("loading");
@@ -468,6 +476,72 @@ function ParagraphEditor() {
     return next;
   })();
 
+  function updateDropPositionFromPointer(
+    clientX: number,
+    clientY: number,
+    draggedId: string,
+  ) {
+    const rows = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        ".paragraph-row[data-paragraph-id]",
+      ),
+    );
+    const target = document.elementFromPoint(clientX, clientY)?.closest<
+      HTMLElement
+    >(".paragraph-row[data-paragraph-id]");
+    if (!target?.dataset.paragraphId) return;
+    const index = rows.indexOf(target);
+    if (index < 0) return;
+
+    const bounds = target.getBoundingClientRect();
+    const after = clientY > bounds.top + bounds.height / 2;
+    const boundary = index + (after ? 1 : 0);
+    const draggedIndex = rows.findIndex((row) =>
+      row.dataset.paragraphId === draggedId
+    );
+    setDropPosition(
+      Math.max(
+        0,
+        Math.min(
+          paragraphs.length - 1,
+          boundary > draggedIndex ? boundary - 1 : boundary,
+        ),
+      ),
+    );
+  }
+
+  function finishPointerDrag(
+    event: { pointerId: number; clientX: number; clientY: number },
+    cancelled = false,
+  ) {
+    const drag = pointerDrag.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    pointerDrag.current = null;
+    if (drag.active && !cancelled) {
+      updateDropPositionFromPointer(event.clientX, event.clientY, drag.id);
+      const from = paragraphs.findIndex((item) => item.id === drag.id);
+      const destination = dropIndexRef.current;
+      if (from >= 0 && destination !== null) {
+        moveParagraph(from, destination);
+      }
+    }
+    setDraggedParagraphId(null);
+    setDropPosition(null);
+  }
+
+  useEffect(() => {
+    const handlePointerUp = (event: PointerEvent) =>
+      finishPointerDrag(event);
+    const handlePointerCancel = (event: PointerEvent) =>
+      finishPointerDrag(event, true);
+    window.addEventListener("pointerup", handlePointerUp);
+    window.addEventListener("pointercancel", handlePointerCancel);
+    return () => {
+      window.removeEventListener("pointerup", handlePointerUp);
+      window.removeEventListener("pointercancel", handlePointerCancel);
+    };
+  }, [paragraphs]);
+
   useLayoutEffect(() => {
     const previousPositions = previousRowPositions.current;
     if (!previousPositions) return;
@@ -650,81 +724,51 @@ function ParagraphEditor() {
                     }`}
                     key={paragraph.id}
                     data-paragraph-id={paragraph.id}
-                    onDragOver={(event) => {
-                      event.preventDefault();
-                      event.dataTransfer.dropEffect = "move";
-                      if (draggedParagraphId === paragraph.id) return;
-                      const bounds = event.currentTarget
-                        .getBoundingClientRect();
-                      const after = event.clientY >
-                        bounds.top + bounds.height / 2;
-                      const boundary = index + (after ? 1 : 0);
-                      const draggedIndex = displayedParagraphs.findIndex(
-                        (item) => item.id === draggedParagraphId,
-                      );
-                      setDropPosition(
-                        Math.max(
-                          0,
-                          Math.min(
-                            paragraphs.length - 1,
-                            boundary > draggedIndex ? boundary - 1 : boundary,
-                          ),
-                        ),
-                      );
-                    }}
-                    onDrop={(event) => {
-                      event.preventDefault();
-                      const draggedId = event.dataTransfer.getData(
-                        "text/plain",
-                      );
-                      const from = paragraphs.findIndex((item) =>
-                        item.id === draggedId
-                      );
-                      const destination = dropIndexRef.current;
-                      if (from >= 0 && destination !== null) {
-                        moveParagraph(from, destination);
-                      }
-                      setDraggedParagraphId(null);
-                      setDropPosition(null);
-                    }}
-                    onDragEnd={() => {
-                      setDraggedParagraphId(null);
-                      setDropPosition(null);
-                    }}
                   >
                     <div className="paragraph-row-content">
                       <button
                         type="button"
                         className="drag-handle"
-                        draggable
                         aria-label={`Drag paragraph ${index + 1} to reorder`}
                         title="Drag to reorder"
-                        onDragStart={(event) => {
-                          event.dataTransfer.effectAllowed = "move";
-                          setDraggedParagraphId(paragraph.id);
-                          setDropPosition(index);
-                          event.dataTransfer.setData(
-                            "text/plain",
-                            paragraph.id,
+                        onPointerDown={(event) => {
+                          if (event.button !== 0) return;
+                          event.preventDefault();
+                          event.currentTarget.setPointerCapture(
+                            event.pointerId,
                           );
-                          const row = event.currentTarget.closest(
-                            ".paragraph-row",
-                          );
-                          if (row) {
-                            const bounds = row.getBoundingClientRect();
-                            event.dataTransfer.setDragImage(
-                              row,
-                              Math.min(
-                                bounds.width * 0.25,
-                                event.clientX - bounds.left,
-                              ),
-                              Math.min(
-                                bounds.height * 0.5,
-                                event.clientY - bounds.top,
-                              ),
-                            );
-                          }
+                          pointerDrag.current = {
+                            id: paragraph.id,
+                            pointerId: event.pointerId,
+                            startX: event.clientX,
+                            startY: event.clientY,
+                            active: false,
+                          };
                         }}
+                        onPointerMove={(event) => {
+                          const drag = pointerDrag.current;
+                          if (!drag || drag.pointerId !== event.pointerId) {
+                            return;
+                          }
+                          if (!drag.active) {
+                            if (
+                              Math.hypot(
+                                event.clientX - drag.startX,
+                                event.clientY - drag.startY,
+                              ) < 5
+                            ) return;
+                            drag.active = true;
+                            setDraggedParagraphId(drag.id);
+                          }
+                          updateDropPositionFromPointer(
+                            event.clientX,
+                            event.clientY,
+                            drag.id,
+                          );
+                        }}
+                        onPointerUp={(event) => finishPointerDrag(event)}
+                        onPointerCancel={(event) =>
+                          finishPointerDrag(event, true)}
                       >
                         ⠿
                       </button>

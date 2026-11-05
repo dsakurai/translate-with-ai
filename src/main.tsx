@@ -175,6 +175,7 @@ function ParagraphEditor() {
   );
   const [dropIndex, setDropIndex] = useState<number | null>(null);
   const dropIndexRef = useRef<number | null>(null);
+  const previousRowPositions = useRef<Map<string, DOMRect> | null>(null);
   const [tomlMalformed, setTomlMalformed] = useState(false);
   const [status, setStatus] = useState<SaveStatus>("loading");
   const [error, setError] = useState("");
@@ -444,6 +445,15 @@ function ParagraphEditor() {
   }
 
   function setDropPosition(index: number | null) {
+    if (dropIndexRef.current === index) return;
+    const positions = new Map<string, DOMRect>();
+    document.querySelectorAll<HTMLElement>(
+      ".paragraph-row[data-paragraph-id]",
+    ).forEach((row) => {
+      const id = row.dataset.paragraphId;
+      if (id) positions.set(id, row.getBoundingClientRect());
+    });
+    previousRowPositions.current = positions;
     dropIndexRef.current = index;
     setDropIndex(index);
   }
@@ -457,6 +467,32 @@ function ParagraphEditor() {
     next.splice(Math.max(0, Math.min(next.length, dropIndex)), 0, dragged);
     return next;
   })();
+
+  useLayoutEffect(() => {
+    const previousPositions = previousRowPositions.current;
+    if (!previousPositions) return;
+    previousRowPositions.current = null;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    document.querySelectorAll<HTMLElement>(
+      ".paragraph-row[data-paragraph-id]",
+    ).forEach((row) => {
+      const id = row.dataset.paragraphId;
+      const previous = id ? previousPositions.get(id) : undefined;
+      if (!previous) return;
+      const current = row.getBoundingClientRect();
+      const deltaX = previous.left - current.left;
+      const deltaY = previous.top - current.top;
+      if (Math.abs(deltaX) < 1 && Math.abs(deltaY) < 1) return;
+      row.animate(
+        [
+          { transform: `translate(${deltaX}px, ${deltaY}px)` },
+          { transform: "translate(0, 0)" },
+        ],
+        { duration: 180, easing: "ease-out" },
+      );
+    });
+  }, [displayedParagraphs]);
 
   useEffect(() => {
     function handleHistoryShortcut(event: KeyboardEvent) {
@@ -613,6 +649,7 @@ function ParagraphEditor() {
                         : ""
                     }`}
                     key={paragraph.id}
+                    data-paragraph-id={paragraph.id}
                     onDragOver={(event) => {
                       event.preventDefault();
                       event.dataTransfer.dropEffect = "move";

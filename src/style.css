@@ -553,6 +553,12 @@ textarea:disabled {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .paragraph-row {
+    transition: none;
+  }
+}
+
 @media (max-width: 560px) {
   .workspace {
     width: min(100% - 36px, 920px);

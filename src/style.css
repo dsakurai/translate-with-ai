@@ -201,19 +201,10 @@ textarea:disabled {
   cursor: default;
 }
 
-.paragraph-columns,
 .paragraph-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
-}
-
-.paragraph-columns {
-  padding: 14px 0 8px;
-  color: #a0a198;
-  font-family: ui-monospace, monospace;
-  font-size: 9px;
-  letter-spacing: 0.12em;
 }
 
 .paragraph-row {
@@ -543,7 +534,6 @@ textarea:disabled {
     font-size: 17px;
   }
 
-  .paragraph-columns,
   .paragraph-fields {
     gap: 10px;
   }

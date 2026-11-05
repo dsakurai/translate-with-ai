@@ -581,10 +581,6 @@ function ParagraphEditor() {
             )
             : (
               <>
-                <div className="paragraph-columns" aria-hidden="true">
-                  <span>ORIGINAL</span>
-                  <span>TRANSLATED</span>
-                </div>
                 {displayedParagraphs.map((paragraph, index) => (
                   <article
                     className={`paragraph-row${

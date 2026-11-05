@@ -309,6 +309,9 @@ textarea:disabled {
 .paragraph-field-toolbar span {
   padding: 0 4px;
   background: #f5f4f0;
+  outline: 1px solid #d4d5cc;
+  outline-offset: 1px;
+  border-radius: 2px;
 }
 
 .paragraph-field-content {

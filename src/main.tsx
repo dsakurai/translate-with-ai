@@ -655,11 +655,89 @@ function ParagraphEditor() {
                       setDropPosition(null);
                     }}
                   >
-                    <div className="paragraph-controls">
+                    <div className="paragraph-row-content">
+                      <div className="paragraph-fields-plate">
+                        <div className="paragraph-fields">
+                          <div className="original-paragraph">
+                            <button
+                              type="button"
+                              className="drag-handle"
+                              draggable
+                              aria-label={`Drag paragraph ${
+                                index + 1
+                              } to reorder`}
+                              title="Drag to reorder"
+                              onDragStart={(event) => {
+                                event.dataTransfer.effectAllowed = "move";
+                                setDraggedParagraphId(paragraph.id);
+                                setDropPosition(index);
+                                event.dataTransfer.setData(
+                                  "text/plain",
+                                  paragraph.id,
+                                );
+                                const row = event.currentTarget.closest(
+                                  ".paragraph-row",
+                                );
+                                if (row) {
+                                  const bounds = row.getBoundingClientRect();
+                                  event.dataTransfer.setDragImage(
+                                    row,
+                                    Math.min(
+                                      bounds.width * 0.25,
+                                      event.clientX - bounds.left,
+                                    ),
+                                    Math.min(
+                                      bounds.height * 0.5,
+                                      event.clientY - bounds.top,
+                                    ),
+                                  );
+                                }
+                              }}
+                            >
+                              ⠿
+                            </button>
+                            <MarkdownField
+                              key={`${paragraph.id}-original`}
+                              label={`Original paragraph ${index + 1}`}
+                              disabled={!loaded}
+                              value={paragraph.original}
+                              onChange={(value) =>
+                                updateParagraphs(
+                                  paragraphs.map((item) =>
+                                    item.id === paragraph.id
+                                      ? {
+                                        ...item,
+                                        original: value,
+                                      }
+                                      : item
+                                  ),
+                                )}
+                            />
+                          </div>
+                          <MarkdownField
+                            key={`${paragraph.id}-translated`}
+                            label={`Translated paragraph ${index + 1}`}
+                            disabled={!loaded}
+                            value={paragraph.translated}
+                            onChange={(value) =>
+                              updateParagraphs(
+                                paragraphs.map((item) =>
+                                  item.id === paragraph.id
+                                    ? {
+                                      ...item,
+                                      translated: value,
+                                    }
+                                    : item
+                                ),
+                              )}
+                          />
+                        </div>
+                      </div>
                       <button
                         type="button"
                         className="remove-paragraph"
                         aria-label={`Remove paragraph ${index + 1}`}
+                        title={`Remove paragraph ${index + 1}`}
                         onClick={() =>
                           updateParagraphs(
                             paragraphs.filter((_, itemIndex) =>
@@ -667,81 +745,21 @@ function ParagraphEditor() {
                             ),
                           )}
                       >
-                        Remove
-                      </button>
-                    </div>
-                    <div className="paragraph-fields">
-                      <div className="original-paragraph">
-                        <button
-                          type="button"
-                          className="drag-handle"
-                          draggable
-                          aria-label={`Drag paragraph ${index + 1} to reorder`}
-                          title="Drag to reorder"
-                          onDragStart={(event) => {
-                            event.dataTransfer.effectAllowed = "move";
-                            setDraggedParagraphId(paragraph.id);
-                            setDropPosition(index);
-                            event.dataTransfer.setData(
-                              "text/plain",
-                              paragraph.id,
-                            );
-                            const row = event.currentTarget.closest(
-                              ".paragraph-row",
-                            );
-                            if (row) {
-                              const bounds = row.getBoundingClientRect();
-                              event.dataTransfer.setDragImage(
-                                row,
-                                Math.min(
-                                  bounds.width * 0.25,
-                                  event.clientX - bounds.left,
-                                ),
-                                Math.min(
-                                  bounds.height * 0.5,
-                                  event.clientY - bounds.top,
-                                ),
-                              );
-                            }
-                          }}
+                        <svg
+                          aria-hidden="true"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         >
-                          ⠿
-                        </button>
-                        <MarkdownField
-                          key={`${paragraph.id}-original`}
-                          label={`Original paragraph ${index + 1}`}
-                          disabled={!loaded}
-                          value={paragraph.original}
-                          onChange={(value) =>
-                            updateParagraphs(
-                              paragraphs.map((item) =>
-                                item.id === paragraph.id
-                                  ? {
-                                    ...item,
-                                    original: value,
-                                  }
-                                  : item
-                              ),
-                            )}
-                        />
-                      </div>
-                      <MarkdownField
-                        key={`${paragraph.id}-translated`}
-                        label={`Translated paragraph ${index + 1}`}
-                        disabled={!loaded}
-                        value={paragraph.translated}
-                        onChange={(value) =>
-                          updateParagraphs(
-                            paragraphs.map((item) =>
-                              item.id === paragraph.id
-                                ? {
-                                  ...item,
-                                  translated: value,
-                                }
-                                : item
-                            ),
-                          )}
-                      />
+                          <path d="M3 6h18" />
+                          <path d="M8 6V4h8v2" />
+                          <path d="m19 6-1 14H6L5 6" />
+                          <path d="M10 11v5M14 11v5" />
+                        </svg>
+                      </button>
                     </div>
                     <button
                       type="button"

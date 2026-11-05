@@ -208,10 +208,28 @@ textarea:disabled {
   gap: 20px;
 }
 
+.paragraph-row-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.paragraph-fields-plate {
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #e7e5df;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.62);
+}
+
 .paragraph-row {
   position: relative;
-  padding: 13px 0 17px;
-  border-bottom: 1px solid #e7e5df;
+  margin: 0 0 16px;
+  padding: 14px;
+  border: 1px solid #e7e5df;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.55);
   transition: opacity 120ms ease, background-color 120ms ease,
     box-shadow 120ms ease;
 }
@@ -228,16 +246,6 @@ textarea:disabled {
 
 .paragraph-row--drop-target {
   box-shadow: inset 0 3px 0 #829782;
-}
-
-.paragraph-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-  color: #a0a198;
-  font-family: ui-monospace, monospace;
-  font-size: 10px;
 }
 
 .drag-handle,
@@ -273,12 +281,24 @@ textarea:disabled {
 }
 
 .remove-paragraph {
-  margin-left: auto;
-  font-size: 11px;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: inline-grid;
+  place-items: center;
+  padding: 5px;
+  border: 1px solid #e2d5d1;
+  border-radius: 5px;
+  color: #a1483c;
+}
+
+.remove-paragraph svg {
+  width: 16px;
+  height: 16px;
 }
 
 .remove-paragraph:hover {
-  color: #a1483c;
+  background: #f7e9e5;
 }
 
 .insert-paragraph {
@@ -571,6 +591,7 @@ textarea:disabled {
   }
 
   .paragraph-fields {
+    grid-template-columns: minmax(0, 1fr);
     gap: 10px;
   }
 

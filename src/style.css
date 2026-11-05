@@ -210,26 +210,18 @@ textarea:disabled {
 
 .paragraph-row-content {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 12px;
-}
-
-.paragraph-fields-plate {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  gap: 4px;
   min-width: 0;
-  padding: 10px;
-  border: 1px solid #e7e5df;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.62);
+  margin-right: 42px;
 }
 
 .paragraph-row {
   position: relative;
   margin: 0 0 16px;
-  padding: 14px;
-  border: 1px solid #e7e5df;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.55);
+  padding: 14px 0 16px;
+  border-bottom: 1px solid #e7e5df;
   transition: opacity 120ms ease, background-color 120ms ease,
     box-shadow 120ms ease;
 }
@@ -260,7 +252,7 @@ textarea:disabled {
 
 .drag-handle {
   flex: 0 0 auto;
-  margin-top: 28px;
+  margin-top: 38px;
   padding: 2px 5px;
   cursor: grab;
   font-size: 17px;
@@ -281,23 +273,25 @@ textarea:disabled {
 }
 
 .remove-paragraph {
-  flex: 0 0 auto;
-  width: 30px;
-  height: 30px;
+  position: absolute;
+  right: 0;
+  top: 12px;
+  width: 24px;
+  height: 24px;
   display: inline-grid;
   place-items: center;
-  padding: 5px;
-  border: 1px solid #e2d5d1;
-  border-radius: 5px;
-  color: #a1483c;
+  padding: 4px;
+  border-radius: 4px;
+  color: #777a72;
 }
 
 .remove-paragraph svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 .remove-paragraph:hover {
+  color: #a1483c;
   background: #f7e9e5;
 }
 

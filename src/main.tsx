@@ -667,22 +667,6 @@ function ParagraphEditor() {
   return (
     <main className="workspace">
       <header className="topbar">
-        <div className="paragraph-history" aria-label="Paragraph edit history">
-          <button
-            type="button"
-            disabled={!loaded || history.index === 0}
-            onClick={undo}
-          >
-            Undo
-          </button>
-          <button
-            type="button"
-            disabled={!loaded || history.index >= history.entries.length - 1}
-            onClick={redo}
-          >
-            Redo
-          </button>
-        </div>
         <div
           className={`save-status save-status--${status}`}
           aria-live="polite"

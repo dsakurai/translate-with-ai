@@ -44,7 +44,7 @@ textarea {
   height: 82px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   background: rgba(245, 244, 240, 0.96);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid #e7e5df;
@@ -120,31 +120,6 @@ textarea:disabled {
 .paragraph-editor {
   position: relative;
   border-top: 1px solid #e7e5df;
-}
-
-.paragraph-history {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 0;
-}
-
-.paragraph-history button {
-  padding: 5px 9px;
-  border: 1px solid #d9dbd2;
-  border-radius: 4px;
-  background: transparent;
-  color: #59645b;
-  cursor: pointer;
-  font-size: 11px;
-}
-
-.paragraph-history button:hover:not(:disabled) {
-  background: #edf0e9;
-}
-
-.paragraph-history button:disabled {
-  color: #b2b3ab;
-  cursor: default;
 }
 
 .paragraph-fields {

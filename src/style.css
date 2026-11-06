@@ -256,16 +256,44 @@ textarea:disabled {
   height: 24px;
   display: grid;
   place-items: center;
-  padding: 0;
-  border: 1px solid #d9dbd2;
-  border-radius: 50%;
-  background: #f5f4f0;
+  padding: 1px;
+  clip-path: polygon(
+    50% 0,
+    65% 35%,
+    100% 50%,
+    65% 65%,
+    50% 100%,
+    35% 65%,
+    0 50%,
+    35% 35%
+  );
+  background: #d9dbd2;
   font-size: 14px;
   line-height: 1;
   transform: translate(0, 50%);
 }
 
+.insert-paragraph::before {
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  clip-path: polygon(
+    50% 0,
+    65% 35%,
+    100% 50%,
+    65% 65%,
+    50% 100%,
+    35% 65%,
+    0 50%,
+    35% 35%
+  );
+  background: #f5f4f0;
+  content: "";
+}
+
 .insert-paragraph svg {
+  position: relative;
+  z-index: 1;
   width: 12px;
   height: 12px;
 }
@@ -277,6 +305,10 @@ textarea:disabled {
 }
 
 .insert-paragraph:hover:not(:disabled) {
+  background: #c9d0c5;
+}
+
+.insert-paragraph:hover:not(:disabled)::before {
   background: #edf0e9;
 }
 
